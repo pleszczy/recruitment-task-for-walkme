@@ -23,7 +23,7 @@
     {
       "name": "activityType",
       "type": ["null", "string"],
-      "default": "null"
+      "default": null
     }
   ]
 }
