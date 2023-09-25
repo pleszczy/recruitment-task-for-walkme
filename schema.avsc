@@ -1,0 +1,29 @@
+{
+  "type": "record",
+  "name": "Activity",
+  "namespace": "com.walkme",
+  "fields": [
+    {
+      "name": "userId",
+      "type": "string"
+    },
+    {
+      "name": "environment",
+      "type": "string"
+    },
+    {
+      "name": "startTimestamp",
+      "type": "long"
+    },
+    {
+      "name": "endTimestamp",
+      "type": ["null", "long"],
+      "default": "null"
+    },
+    {
+      "name": "activityType",
+      "type": ["null", "string"],
+      "default": "null"
+    }
+  ]
+}
