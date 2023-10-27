@@ -1,0 +1,20 @@
+ext {
+    versions = [
+            assertj           : '3.24.2',
+            avro              : '1.11.3',
+            awaitability      : '4.2.0',
+            flink             : '1.18.0',
+            flinkJava17Support: '2.14.2-17.0',
+            hadoop            : '3.3.5',
+            hamcrest          : '2.2',
+            hamcrestOptional  : '2.0.0',
+            jacksonDatabind   : '2.15.3',
+            junit             : '5.10.0',
+            logback           : '1.3.8',
+            mockito           : '5.2.0',
+            okhttp            : '4.12.0',
+            parquetAvro       : '1.13.1',
+            recordBuilder     : '37',
+            resilience4j      : '2.1.0'
+    ]
+}

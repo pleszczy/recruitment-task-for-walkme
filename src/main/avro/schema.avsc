@@ -4,12 +4,20 @@
   "namespace": "com.walkme",
   "fields": [
     {
+      "name": "environment",
+      "type": "string"
+    },
+    {
       "name": "userId",
       "type": "string"
     },
     {
-      "name": "environment",
-      "type": "string"
+      "name": "activityType",
+      "type": [
+        "null",
+        "string"
+      ],
+      "default": null
     },
     {
       "name": "startTimestamp",
@@ -17,12 +25,10 @@
     },
     {
       "name": "endTimestamp",
-      "type": ["null", "long"],
-      "default": "null"
-    },
-    {
-      "name": "activityType",
-      "type": ["null", "string"],
+      "type": [
+        "null",
+        "long"
+      ],
       "default": null
     }
   ]

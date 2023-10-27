@@ -1,0 +1,130 @@
+plugins {
+    id "com.github.davidmc24.gradle.plugin.avro" version "1.9.1"
+    id "com.github.johnrengelman.shadow" version "8.1.1"
+}
+
+apply plugin: 'application'
+apply plugin: 'checkstyle'
+apply plugin: 'java'
+apply plugin: 'idea'
+
+repositories {
+    mavenLocal()
+    mavenCentral()
+    maven {
+        url 'https://packages.confluent.io/maven/'
+    }
+}
+
+description = "My very first project in flink. Implementing walkme recruitment task"
+
+java {
+    sourceCompatibility = JavaVersion.VERSION_17
+    targetCompatibility = JavaVersion.VERSION_17
+}
+
+avro {
+    createOptionalGetters = true
+    outputCharacterEncoding = "UTF-8"
+}
+
+application {
+    mainClassName = "com.walkme.App"
+    applicationDefaultJvmArgs = [
+            "--add-opens", "java.base/java.lang=ALL-UNNAMED",
+            "--add-opens", "java.base/java.util=ALL-UNNAMED",
+            "-Dfile.encoding=UTF-8",
+            "-Duser.timezone=UTC"
+    ]
+}
+
+run {
+    doFirst {
+        if (project.hasProperty("appArgs")) {
+            args project.getProperty("appArgs").split(",")
+        }
+    }
+}
+
+apply from: 'versions.gradle'
+dependencies {
+    implementation(
+            // Common dependencies
+            "io.soabase.record-builder:record-builder-core:${versions.recordBuilder}",
+            "com.squareup.okhttp3:okhttp:${versions.okhttp}",
+            "com.fasterxml.jackson.core:jackson-databind:${versions.jacksonDatabind}",
+            "com.fasterxml.jackson.datatype:jackson-datatype-jsr310:${versions.jacksonDatabind}",
+
+            // Resilience
+            "io.github.resilience4j:resilience4j-retry:${versions.resilience4j}",
+
+            // Flink dependencies
+            "org.apache.flink:flink-java:${versions.flink}",
+            "org.apache.flink:flink-streaming-java:${versions.flink}",
+            "org.apache.flink:flink-avro:${versions.flink}",
+            "org.apache.flink:flink-parquet:${versions.flink}",
+            "org.apache.flink:flink-connector-files:${versions.flink}",
+            "org.apache.flink:flink-shaded-jackson:${versions.flinkJava17Support}",
+            "org.apache.flink:flink-runtime-web:${versions.flink}",
+            "org.apache.hadoop:hadoop-client:${versions.hadoop}",
+            "org.apache.avro:avro:${versions.avro}",
+            "org.apache.parquet:parquet-avro:${versions.parquetAvro}",
+            // Overriding kryo version to allow serialization of java records
+            "com.esotericsoftware:kryo:5.5.0",
+
+
+            // Logging
+            "ch.qos.logback:logback-access:${versions.logback}",
+            "ch.qos.logback:logback-classic:${versions.logback}",
+    )
+
+    annotationProcessor "io.soabase.record-builder:record-builder-processor:${versions.recordBuilder}"
+
+    testImplementation(
+            "org.assertj:assertj-core:${versions.assertj}",
+            "org.awaitility:awaitility:${versions.awaitability}",
+            "org.hamcrest:hamcrest-core:${versions.hamcrest}",
+            "com.github.npathai:hamcrest-optional:${versions.hamcrestOptional}",
+            "org.junit.jupiter:junit-jupiter-api:${versions.junit}",
+            "org.junit.jupiter:junit-jupiter-params:${versions.junit}",
+            "org.mockito:mockito-inline:${versions.mockito}",
+            "org.mockito:mockito-junit-jupiter:${versions.mockito}"
+    )
+
+    testRuntimeOnly "org.junit.jupiter:junit-jupiter-engine:${versions.junit}"
+}
+
+configurations {
+    configureEach {
+        resolutionStrategy {
+            exclude group: 'log4j', module: 'log4j'
+            exclude group: 'org.slf4j', module: 'slf4j-log4j12'
+            exclude group: 'junit', module: 'junit'
+        }
+    }
+}
+
+test {
+    useJUnitPlatform()
+}
+
+idea {
+    module {
+        downloadJavadoc = true
+        downloadSources = true
+    }
+    project {
+        vcs = 'Git'
+        languageLevel = '17'
+    }
+}
+
+checkstyle {
+    toolVersion = '10.12.4'
+    showViolations = true
+    maxWarnings = 0
+    maxErrors = 0
+}
+
+checkstyleMain
+        .exclude('/com/walkme/Activity.java')

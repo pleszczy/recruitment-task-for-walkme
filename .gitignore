@@ -1,0 +1,10 @@
+*.iml
+*.ipr
+*.iws
+
+.idea/**
+.gradle/**
+build/**
+logs/**
+**/.DS_Store/
+/output
