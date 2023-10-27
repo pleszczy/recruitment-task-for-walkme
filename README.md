@@ -162,6 +162,10 @@ Overriding input/output data paths
 - **Note**: Verify whether an activity can extend over multiple days. If it's limited to just one day, we can simplify
   the logic and reduce computational complexity.
 
+### 8. Git configured to point to a private repository gitlab.walkmernd.com
+
+**Resolution**: Use a public GitHub account to host the project and setup CI
+
 ## Project Structure Overview
 
 This project aspires to adhere to the `Clean Architecture` principles. However, due to time constraints, its
