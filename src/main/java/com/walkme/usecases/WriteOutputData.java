@@ -10,7 +10,6 @@ import org.apache.flink.core.fs.Path;
 import org.apache.flink.core.io.SimpleVersionedSerializer;
 import org.apache.flink.formats.parquet.avro.AvroParquetWriters;
 import org.apache.flink.streaming.api.datastream.DataStreamSink;
-import org.apache.flink.streaming.api.datastream.KeyedStream;
 import org.apache.flink.streaming.api.datastream.SingleOutputStreamOperator;
 import org.apache.flink.streaming.api.functions.sink.filesystem.BucketAssigner;
 import org.apache.flink.streaming.api.functions.sink.filesystem.OutputFileConfig;
@@ -20,7 +19,7 @@ public class WriteOutputData {
   public static DataStreamSink<DailyActivityAggregate> execute(
       SingleOutputStreamOperator<ActivityAccumulator> aggregatedDataStream, Path outputPath) {
 
-    KeyedStream<DailyActivityAggregate, Tuple4<String, String, String, String>> avroDataStream = aggregatedDataStream
+    var avroDataStream = aggregatedDataStream
         .map(activityAcc -> new DailyActivityAggregate(activityAcc.date(), activityAcc.userId(),
             activityAcc.environment(), activityAcc.activityType(), activityAcc.runTime()))
         .setParallelism(1)
@@ -41,11 +40,11 @@ public class WriteOutputData {
         .withBucketAssigner(new BucketAssigner<>() {
           @Override
           public String getBucketId(DailyActivityAggregate dailyActivityAggregates, Context context) {
-            String date = dailyActivityAggregates.get("date").toString();
-            String[] parts = date.split("-");
-            String year = parts[0];
-            String month = parts[1];
-            String day = parts[2];
+            var date = dailyActivityAggregates.get("date").toString();
+            var parts = date.split("-");
+            var year = parts[0];
+            var month = parts[1];
+            var day = parts[2];
             return String.format("year=%s/month=%s/day=%s", year, month, day);
           }
 

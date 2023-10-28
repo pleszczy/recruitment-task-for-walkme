@@ -1,8 +1,13 @@
-package com.walkme.usecases;
+package com.walkme;
 
 import com.walkme.adapters.frameworks.flink.ActivityTimeWatermarkStrategyFactory;
 import com.walkme.entities.ActivityAccumulator;
 import com.walkme.generated.Activity;
+import com.walkme.usecases.AggregateActivities;
+import com.walkme.usecases.FilterOutActivitiesInActiveTestEnvironment;
+import com.walkme.usecases.FilterOutExcludedActivityTypes;
+import com.walkme.usecases.MapNullActivitiesTypeToUnknownType;
+import com.walkme.usecases.ReadInputActivities;
 import java.util.Set;
 import org.apache.flink.api.java.functions.KeySelector;
 import org.apache.flink.api.java.tuple.Tuple3;
@@ -12,7 +17,7 @@ import org.apache.flink.streaming.api.environment.StreamExecutionEnvironment;
 import org.apache.flink.streaming.api.windowing.assigners.TumblingEventTimeWindows;
 import org.apache.flink.streaming.api.windowing.time.Time;
 
-public final class PrepareDailyActivityAggregates {
+public final class DailyActivityAggregatesBatchJob {
 
   public static SingleOutputStreamOperator<ActivityAccumulator> execute(
       Path dataPath, Set<String> excludeActivitiesTypes, StreamExecutionEnvironment env) {

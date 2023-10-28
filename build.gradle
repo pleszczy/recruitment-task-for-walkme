@@ -50,7 +50,6 @@ apply from: 'versions.gradle'
 dependencies {
     implementation(
             // Common dependencies
-            "io.soabase.record-builder:record-builder-core:${versions.recordBuilder}",
             "com.squareup.okhttp3:okhttp:${versions.okhttp}",
             "com.fasterxml.jackson.core:jackson-databind:${versions.jacksonDatabind}",
             "com.fasterxml.jackson.datatype:jackson-datatype-jsr310:${versions.jacksonDatabind}",
@@ -77,8 +76,6 @@ dependencies {
             "ch.qos.logback:logback-access:${versions.logback}",
             "ch.qos.logback:logback-classic:${versions.logback}",
     )
-
-    annotationProcessor "io.soabase.record-builder:record-builder-processor:${versions.recordBuilder}"
 
     testImplementation(
             "org.assertj:assertj-core:${versions.assertj}",

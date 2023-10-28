@@ -16,7 +16,7 @@ public class FilterOutExcludedActivityTypes implements FilterFunction<Activity> 
 
   @Override
   public boolean filter(Activity activity) {
-    boolean isExcluded = excludedActivityTypes.contains(activity.getActivityType());
+    var isExcluded = excludedActivityTypes.contains(activity.getActivityType());
     if (isExcluded) {
       LOG.debug("Filtering out activity: {}. It's among the excluded activity types: {}", activity,
           excludedActivityTypes);

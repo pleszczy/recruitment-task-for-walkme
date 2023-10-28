@@ -21,7 +21,8 @@ public class FilterOutActivitiesInActiveTestEnvironment extends RichFilterFuncti
 
   @Override
   public void open(Configuration parameters) {
-    this.environmentRepository = AppModule.environmentRepository();
+    var appModule = new AppModule();
+    this.environmentRepository = appModule.environmentRepository();
   }
 
   @Override
@@ -40,7 +41,7 @@ public class FilterOutActivitiesInActiveTestEnvironment extends RichFilterFuncti
    * Determines if an activity occurs during the active test environment time.
    */
   private boolean activityOccursInActiveTestEnvironment(Activity activity, Environment env) {
-    boolean isSameTestEnvironment = Objects.equals(activity.getEnvironment(), env.environment());
+    var isSameTestEnvironment = Objects.equals(activity.getEnvironment(), env.environment());
     return isSameTestEnvironment && isWithinTestEnvironmentActiveTime(activity, env);
   }
 
@@ -48,10 +49,10 @@ public class FilterOutActivitiesInActiveTestEnvironment extends RichFilterFuncti
    * Checks if the activity's time range overlaps with the active test environment time.
    */
   private boolean isWithinTestEnvironmentActiveTime(Activity activity, Environment environment) {
-    long activeFrom = toTimestampAtStartOfDay(environment.activeFrom());
-    long activeUntil = toTimestampAtEndOfDay(environment.activeUntil());
-    long activityStart = activity.getStartTimestamp();
-    long activityEnd = getActivityEndTimestamp(activity);
+    var activeFrom = toTimestampAtStartOfDay(environment.activeFrom());
+    var activeUntil = toTimestampAtEndOfDay(environment.activeUntil());
+    var activityStart = activity.getStartTimestamp();
+    var activityEnd = getActivityEndTimestamp(activity);
 
     return (activityStart >= activeFrom && activityStart <= activeUntil)
         || (activityEnd >= activeFrom && activityEnd <= activeUntil);
@@ -66,8 +67,8 @@ public class FilterOutActivitiesInActiveTestEnvironment extends RichFilterFuncti
   }
 
   private void logExcludedActivity(Activity activity, Environment environment) {
-    String startISO = toUtcDate(activity.getStartTimestamp());
-    String endISO = toUtcDate(getActivityEndTimestamp(activity));
+    var startISO = toUtcDate(activity.getStartTimestamp());
+    var endISO = toUtcDate(getActivityEndTimestamp(activity));
     LOG.debug("Excluding activity: [userID: {}, env: {}, start: {}, end: {}] due to active test environment: {}",
         activity.getUserId(), activity.getEnvironment(), startISO, endISO, environment);
   }

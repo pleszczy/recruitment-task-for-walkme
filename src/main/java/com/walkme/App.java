@@ -4,7 +4,6 @@ import static org.apache.flink.streaming.api.environment.StreamExecutionEnvironm
 
 import com.walkme.generated.Activity;
 import com.walkme.generated.DailyActivityAggregate;
-import com.walkme.usecases.PrepareDailyActivityAggregates;
 import com.walkme.usecases.WriteOutputData;
 import java.util.Arrays;
 import java.util.HashSet;
@@ -25,7 +24,7 @@ public class App {
 
   public static void executeJob(Path inputPath, Path outputPath, Set<String> excludeActivitiesTypes) throws Exception {
     try (var env = setupEnvironment()) {
-      var dailyAggregatesStream = PrepareDailyActivityAggregates.execute(inputPath, excludeActivitiesTypes, env);
+      var dailyAggregatesStream = DailyActivityAggregatesBatchJob.execute(inputPath, excludeActivitiesTypes, env);
       WriteOutputData.execute(dailyAggregatesStream, outputPath);
       env.execute("Walkme Take Home Assignment");
     }
@@ -33,7 +32,7 @@ public class App {
 
   @NotNull
   private static StreamExecutionEnvironment setupEnvironment() {
-    StreamExecutionEnvironment env = createLocalEnvironmentWithWebUI(new Configuration());
+    var env = createLocalEnvironmentWithWebUI(new Configuration());
     env.setRuntimeMode(RuntimeExecutionMode.AUTOMATIC);
     env.setRestartStrategy(RestartStrategies.fallBackRestart());
     env.registerTypeWithKryoSerializer(Activity.class, AvroSchemaSerializer.class);

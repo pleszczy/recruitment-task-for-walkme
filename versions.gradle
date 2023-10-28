@@ -14,7 +14,6 @@ ext {
             mockito           : '5.2.0',
             okhttp            : '4.12.0',
             parquetAvro       : '1.13.1',
-            recordBuilder     : '37',
             resilience4j      : '2.1.0'
     ]
 }
