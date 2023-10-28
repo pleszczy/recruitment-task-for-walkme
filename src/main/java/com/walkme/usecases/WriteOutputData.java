@@ -12,7 +12,7 @@ import org.apache.flink.streaming.api.datastream.SingleOutputStreamOperator;
 import org.apache.flink.streaming.api.functions.sink.filesystem.BucketAssigner;
 import org.apache.flink.streaming.api.functions.sink.filesystem.bucketassigners.SimpleVersionedStringSerializer;
 
-public class WriteOutputDataUseCase {
+public class WriteOutputData {
   public static DataStreamSink<String> execute(
       SingleOutputStreamOperator<ActivityAccumulator> aggregatedDataStream, Path outputPath) {
     SingleOutputStreamOperator<String> csvDataStream = aggregatedDataStream

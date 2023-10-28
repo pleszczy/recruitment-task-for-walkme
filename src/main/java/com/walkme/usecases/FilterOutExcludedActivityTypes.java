@@ -6,11 +6,11 @@ import org.apache.flink.api.common.functions.FilterFunction;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class FilterOutExcludedActivityTypesUseCase implements FilterFunction<Activity> {
-  private static final Logger LOG = LoggerFactory.getLogger(FilterOutExcludedActivityTypesUseCase.class);
+public class FilterOutExcludedActivityTypes implements FilterFunction<Activity> {
+  private static final Logger LOG = LoggerFactory.getLogger(FilterOutExcludedActivityTypes.class);
   private final Set<String> excludedActivityTypes;
 
-  public FilterOutExcludedActivityTypesUseCase(Set<String> excludedActivityTypes) {
+  public FilterOutExcludedActivityTypes(Set<String> excludedActivityTypes) {
     this.excludedActivityTypes = excludedActivityTypes;
   }
 

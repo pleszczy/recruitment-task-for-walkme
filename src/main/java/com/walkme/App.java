@@ -2,8 +2,8 @@ package com.walkme;
 
 import static org.apache.flink.streaming.api.environment.StreamExecutionEnvironment.createLocalEnvironmentWithWebUI;
 
-import com.walkme.usecases.PrepareDailyActivityAggregatesUseCase;
-import com.walkme.usecases.WriteOutputDataUseCase;
+import com.walkme.usecases.PrepareDailyActivityAggregates;
+import com.walkme.usecases.WriteOutputData;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
@@ -22,8 +22,8 @@ public class App {
 
   public static void executeJob(Path inputPath, Path outputPath, Set<String> excludeActivitiesTypes) throws Exception {
     try (var env = setupEnvironment()) {
-      var dailyAggregatesStream = PrepareDailyActivityAggregatesUseCase.execute(inputPath, excludeActivitiesTypes, env);
-      WriteOutputDataUseCase.execute(dailyAggregatesStream, outputPath);
+      var dailyAggregatesStream = PrepareDailyActivityAggregates.execute(inputPath, excludeActivitiesTypes, env);
+      WriteOutputData.execute(dailyAggregatesStream, outputPath);
       env.execute("Walkme Take Home Assignment");
     }
   }

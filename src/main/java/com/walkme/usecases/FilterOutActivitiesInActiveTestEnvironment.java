@@ -15,8 +15,8 @@ import org.apache.flink.configuration.Configuration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class FilterOutActivitiesInActiveTestEnvironmentUseCase extends RichFilterFunction<Activity> {
-  private static final Logger LOG = LoggerFactory.getLogger(FilterOutActivitiesInActiveTestEnvironmentUseCase.class);
+public class FilterOutActivitiesInActiveTestEnvironment extends RichFilterFunction<Activity> {
+  private static final Logger LOG = LoggerFactory.getLogger(FilterOutActivitiesInActiveTestEnvironment.class);
   private transient EnvironmentRepository environmentRepository;
 
   @Override

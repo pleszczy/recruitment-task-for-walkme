@@ -149,7 +149,7 @@ Overriding input/output data paths
 - **Resolution**: Record support was added to kryo in https://github.com/EsotericSoftware/kryo/pull/766 but flink is
   using a much older version. Upgraded kryo dependency to the latest version.
 
-`java.lang.IllegalArgumentException: Unable to create serializer "com.esotericsoftware.kryo.serializers.FieldSerializer" for class: com.walkme.usecases.PrepareDailyActivityAggregatesUseCase$AggregateActivity`
+`java.lang.IllegalArgumentException: Unable to create serializer "com.esotericsoftware.kryo.serializers.FieldSerializer" for class: com.walkme.usecases.PrepareDailyActivityAggregates$AggregateActivity`
 
 ### 6. lambda methods don't provide enough information for automatic type extraction when Java generics are involved
 
