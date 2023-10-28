@@ -1,6 +1,6 @@
 package com.walkme.usecases;
 
-import com.walkme.Activity;
+import com.walkme.generated.Activity;
 import org.apache.flink.api.common.eventtime.WatermarkStrategy;
 import org.apache.flink.connector.file.src.FileSource;
 import org.apache.flink.core.fs.Path;

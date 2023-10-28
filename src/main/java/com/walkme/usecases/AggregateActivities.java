@@ -3,8 +3,8 @@ package com.walkme.usecases;
 import static com.walkme.common.TimeUtils.toTimestampAtEndOfDay;
 import static com.walkme.common.TimeUtils.toUtcDate;
 
-import com.walkme.Activity;
 import com.walkme.entities.ActivityAccumulator;
+import com.walkme.generated.Activity;
 import java.util.Optional;
 import org.apache.flink.api.common.functions.AggregateFunction;
 

@@ -1,6 +1,6 @@
 package com.walkme.usecases;
 
-import com.walkme.Activity;
+import com.walkme.generated.Activity;
 import java.util.Set;
 import org.apache.flink.api.common.functions.FilterFunction;
 import org.slf4j.Logger;

@@ -115,56 +115,49 @@ Overriding input/output data paths
 
 ## Implementation Details and Notes
 
-### 1. Mismatch Between Avro and Parquet Schemas:
-
-- **Issue**: AvroSerializer incorrectly mapped the activity column value to the startTimestamp column.
-- **Root Cause**: Discrepancy between Avro and Parquet schema structures.
-- **Resolution**: Adjusted the Avro schema to match the Parquet schema.
-
+### 1. Avro vs Parquet Schema Mismatch
+- **Issue**: The `AvroSerializer` mapped the activity column value to the `startTimestamp` column incorrectly.
+- **Root Cause**: Differences in the structures of Avro and Parquet schemas.
+- **Resolution**: Revised the Avro schema to align with the Parquet schema.
+  
   ![img.png](img.png)
   ![img_1.png](img_1.png)
 
-### 2. Default Value Anomaly in `endTimestamp`:
+### 2. Anomaly in Default Value for `endTimestamp`
+- **Issue**: The Avro schema assigned a string "null" as the default for `endTimestamp`.
+- **Resolution**: Updated the Avro schema to designate the genuine `null` value.
 
-- **Issue**: Avro schema set the default value for `endTimestamp` as the string "null".
-- **Resolution**: Modified the Avro schema to use the actual `null` value.
-
-### 3. Java 17 Compatibility with Flink:
-
-- **Issue**: Due to Flink's utilization of reflection for serializing UDFs and data (through Kryo), issues can arise if
-  UDFs or data types incorporate JDK classes.
-- **Resolution**: Allowed access to necessary JDK classes using VM options
-  e.g. `--add-opens java.base/java.lang=ALL-UNNAMED`.
+### 3. Compatibility of Java 17 with Flink
+- **Issue**: Issues arise from Flink's reflection-based serialization of UDFs and data via Kryo when using JDK classes.
+- **Resolution**: Granted access to essential JDK classes using VM options, for example: `--add-opens java.base/java.lang=ALL-UNNAMED`.
 
   ![img_2.png](img_2.png)
 
-### 4. OkHttp3 Infinite Retrying Issue
+### 4. Persistent Retry Issue with OkHttp3
+- **Issue**: OkHttp3 keeps retrying indefinitely when an API is down.
+- **Resolution**: Currently, no resolution is identified. The strict module system of Jigsaw is under suspicion.
 
-- **Issue**: OkHttp3 retries indefinitely when the API is down.
-- **Resolution**: No solution has been found as of now. I suspect a Jigsaw strict module system.
-
-### 5. Kryo Serializer and Java Records
-
-- **Issue**: Kryo serializer does not support java records
-- **Resolution**: Record support was added to kryo in https://github.com/EsotericSoftware/kryo/pull/766 but flink is
-  using a much older version. Upgraded kryo dependency to the latest version.
+### 5. Kryo Serializer Limitation with Java Records
+- **Issue**: Kryo serializer lacks support for Java records.
+- **Resolution**: While record support was introduced to Kryo in a [recent update](https://github.com/EsotericSoftware/kryo/pull/766), Flink uses an older version. As a remedy, the Kryo dependency was updated.
 
 `java.lang.IllegalArgumentException: Unable to create serializer "com.esotericsoftware.kryo.serializers.FieldSerializer" for class: com.walkme.usecases.PrepareDailyActivityAggregates$AggregateActivity`
 
-### 6. lambda methods don't provide enough information for automatic type extraction when Java generics are involved
+### 6. Lambda Function Limitations with Java Generics
+- **Issue**: The concise lambdas are less preferable due to insufficient type information they provide, especially when Java generics are in play.
+- **Resolution**: There isn't a definitive solution yet. Using value objects in place of generic Tuples is a potential workaround.
+- **Resources**: [Flink Documentation](https://nightlies.apache.org/flink/flink-docs-release-1.19/docs/dev/datastream/java_lambdas/)
 
-- **Issue**: An issue forcing you to use verbose anonymous classes instead of smaller lambdas
-- **Resolution**: No solution has been found as of now, other than using value objects instead of generic Tuples
-- **Resources**: https://nightlies.apache.org/flink/flink-docs-release-1.19/docs/dev/datastream/java_lambdas/
+### 7. Activity Duration Scope
+- **Note**: It's essential to ascertain if an activity can span multiple days. If restricted to a single day, it allows for a more streamlined logic and optimizes computation.
 
-### 7. Activity Duration Verification
+### 8. Null Activity Type Handling
+- **Note**: Activities with `null` types are mapped to "UNKNOWN" to facilitate the filtering process.
 
-- **Note**: Verify whether an activity can extend over multiple days. If it's limited to just one day, we can simplify
-  the logic and reduce computational complexity.
+### 9. File Output Anomalies on Migrating to Parquet
+- **Issue**: On using `keyBy(...)`/`setParallelism(1)`, multiple files were generated for each day, each having a singular row. This was in contrast to the expected behavior observed with plain text CSV using `keyBy(date)`. The anomaly surfaced post the switch to Parquet format.
+- **Resolution**: Despite attempts to rectify the issue by overriding the file rolling policy with `SizeBasedFileRollingPolicy` and using `setParallelism(1)`, a solution remains elusive.
 
-### 8. Git configured to point to a private repository gitlab.walkmernd.com
-
-**Resolution**: Use a public GitHub account to host the project and setup CI
 
 ## Project Structure Overview
 

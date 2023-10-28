@@ -4,10 +4,10 @@ import static com.walkme.common.TimeUtils.toTimestampAtEndOfDay;
 import static com.walkme.common.TimeUtils.toTimestampAtStartOfDay;
 import static com.walkme.common.TimeUtils.toUtcDate;
 
-import com.walkme.Activity;
 import com.walkme.AppModule;
 import com.walkme.adapters.repositories.EnvironmentRepository;
 import com.walkme.entities.Environment;
+import com.walkme.generated.Activity;
 import java.util.Objects;
 import java.util.Optional;
 import org.apache.flink.api.common.functions.RichFilterFunction;

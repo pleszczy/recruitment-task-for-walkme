@@ -1,6 +1,6 @@
 package com.walkme.usecases;
 
-import com.walkme.Activity;
+import com.walkme.generated.Activity;
 import org.apache.flink.api.common.functions.MapFunction;
 
 public class MapNullActivitiesTypeToUnknownType implements MapFunction<Activity, Activity> {

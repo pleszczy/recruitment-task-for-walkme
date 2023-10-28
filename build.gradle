@@ -127,4 +127,4 @@ checkstyle {
 }
 
 checkstyleMain
-        .exclude('/com/walkme/Activity.java')
+        .exclude('/com/walkme/generated/*.java')

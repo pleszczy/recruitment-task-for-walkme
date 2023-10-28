@@ -1,0 +1,33 @@
+{
+  "type": "record",
+  "name": "DailyActivityAggregate",
+  "namespace": "com.walkme.generated",
+  "doc": "Daily activity aggregates for every user per environment",
+  "fields": [
+    {
+      "name": "date",
+      "type": "string",
+      "doc": "Date of the activity."
+    },
+    {
+      "name": "userId",
+      "type": "string",
+      "doc": "Identifier for the user."
+    },
+    {
+      "name": "environment",
+      "type": "string",
+      "doc": "Environment in which the activity occurred."
+    },
+    {
+      "name": "activityType",
+      "type": "string",
+      "doc": "Type of the activity."
+    },
+    {
+      "name": "runTime",
+      "type": "long",
+      "doc": "Run time of the activity in milliseconds."
+    }
+  ]
+}

@@ -1,6 +1,6 @@
 package com.walkme.adapters.frameworks.flink;
 
-import com.walkme.Activity;
+import com.walkme.generated.Activity;
 import org.apache.flink.api.common.eventtime.TimestampAssignerSupplier;
 import org.apache.flink.api.common.eventtime.WatermarkStrategy;
 

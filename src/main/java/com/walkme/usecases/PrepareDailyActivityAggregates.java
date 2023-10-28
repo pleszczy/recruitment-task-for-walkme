@@ -1,8 +1,8 @@
 package com.walkme.usecases;
 
-import com.walkme.Activity;
 import com.walkme.adapters.frameworks.flink.ActivityTimeWatermarkStrategyFactory;
 import com.walkme.entities.ActivityAccumulator;
+import com.walkme.generated.Activity;
 import java.util.Set;
 import org.apache.flink.api.java.functions.KeySelector;
 import org.apache.flink.api.java.tuple.Tuple3;

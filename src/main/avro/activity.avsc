@@ -1,7 +1,7 @@
 {
   "type": "record",
   "name": "Activity",
-  "namespace": "com.walkme",
+  "namespace": "com.walkme.generated",
   "fields": [
     {
       "name": "environment",
