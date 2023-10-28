@@ -1,11 +1,8 @@
 package com.walkme.usecases;
 
-import static com.walkme.common.TimeUtils.toTimestampAtEndOfDay;
-import static com.walkme.common.TimeUtils.toTimestampAtStartOfDay;
-import static com.walkme.common.TimeUtils.toUtcDate;
-
 import com.walkme.AppModule;
 import com.walkme.adapters.repositories.EnvironmentRepository;
+import com.walkme.common.TimeConverter;
 import com.walkme.entities.Environment;
 import com.walkme.generated.Activity;
 import java.util.Objects;
@@ -49,8 +46,8 @@ public class FilterOutActivitiesInActiveTestEnvironment extends RichFilterFuncti
    * Checks if the activity's time range overlaps with the active test environment time.
    */
   private boolean isWithinTestEnvironmentActiveTime(Activity activity, Environment environment) {
-    var activeFrom = toTimestampAtStartOfDay(environment.activeFrom());
-    var activeUntil = toTimestampAtEndOfDay(environment.activeUntil());
+    var activeFrom = TimeConverter.toTimestampAtStartOfDay(environment.activeFrom());
+    var activeUntil = TimeConverter.toTimestampAtEndOfDay(environment.activeUntil());
     var activityStart = activity.getStartTimestamp();
     var activityEnd = getActivityEndTimestamp(activity);
 
@@ -63,12 +60,12 @@ public class FilterOutActivitiesInActiveTestEnvironment extends RichFilterFuncti
    */
   private long getActivityEndTimestamp(Activity activity) {
     return Optional.ofNullable(activity.getEndTimestamp())
-        .orElse(toTimestampAtEndOfDay(activity.getStartTimestamp()));
+        .orElse(TimeConverter.toTimestampAtEndOfDay(activity.getStartTimestamp()));
   }
 
   private void logExcludedActivity(Activity activity, Environment environment) {
-    var startISO = toUtcDate(activity.getStartTimestamp());
-    var endISO = toUtcDate(getActivityEndTimestamp(activity));
+    var startISO = TimeConverter.toUtcDate(activity.getStartTimestamp());
+    var endISO = TimeConverter.toUtcDate(getActivityEndTimestamp(activity));
     LOG.debug("Excluding activity: [userID: {}, env: {}, start: {}, end: {}] due to active test environment: {}",
         activity.getUserId(), activity.getEnvironment(), startISO, endISO, environment);
   }

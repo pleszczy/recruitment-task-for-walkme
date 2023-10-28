@@ -7,7 +7,7 @@ import java.time.LocalDate;
 import java.time.ZoneOffset;
 import java.time.format.DateTimeFormatter;
 
-public class TimeUtils {
+public class TimeConverter {
   public static long toTimestampAtStartOfDay(String date) {
     return LocalDate.parse(date).atStartOfDay(UTC).toInstant().toEpochMilli();
   }

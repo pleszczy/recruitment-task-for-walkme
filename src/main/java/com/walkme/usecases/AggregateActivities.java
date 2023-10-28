@@ -1,7 +1,7 @@
 package com.walkme.usecases;
 
-import static com.walkme.common.TimeUtils.toTimestampAtEndOfDay;
-import static com.walkme.common.TimeUtils.toUtcDate;
+import static com.walkme.common.TimeConverter.toTimestampAtEndOfDay;
+import static com.walkme.common.TimeConverter.toUtcDate;
 
 import com.walkme.entities.ActivityAccumulator;
 import com.walkme.generated.Activity;
