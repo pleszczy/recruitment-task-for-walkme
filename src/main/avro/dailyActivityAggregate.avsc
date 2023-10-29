@@ -25,7 +25,7 @@
       "doc": "Type of the activity."
     },
     {
-      "name": "runTime",
+      "name": "runTimeMs",
       "type": "long",
       "doc": "Run time of the activity in milliseconds."
     }
