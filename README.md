@@ -155,9 +155,11 @@ Overriding input/output data paths
 - **Note**: Activities with `null` types are mapped to "UNKNOWN" to facilitate the filtering process.
 
 ### 9. File Output Anomalies on Migrating to Parquet
-- **Issue**: On using `keyBy(...)`/`setParallelism(1)`, multiple files were generated for each day, each having a singular row. This was in contrast to the expected behavior observed with plain text CSV using `keyBy(date)`. The anomaly surfaced post the switch to Parquet format.
+- **Issue**: Even when using `keyBy(...)`/`setParallelism(1)`, multiple files were generated for each day, each having a singular row. This was working correctly when writing to a plain text CSV using `keyBy(date)`. The anomaly surfaced post the switch to Parquet format.
 - **Resolution**: Despite attempts to rectify the issue by overriding the file rolling policy with `SizeBasedFileRollingPolicy` and using `setParallelism(1)`, a solution remains elusive.
 -  **Note**: Suspect java 17 issue in the serialization phase
+
+![img_3.png](img_3.png)
 
 ## Project Structure Overview
 
