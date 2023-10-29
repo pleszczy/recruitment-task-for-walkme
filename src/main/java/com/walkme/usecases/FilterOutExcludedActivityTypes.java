@@ -1,6 +1,6 @@
 package com.walkme.usecases;
 
-import com.walkme.generated.Activity;
+import com.walkme.entities.Activity;
 import java.util.Set;
 import org.apache.flink.api.common.functions.FilterFunction;
 import org.slf4j.Logger;
@@ -16,7 +16,7 @@ public class FilterOutExcludedActivityTypes implements FilterFunction<Activity> 
 
   @Override
   public boolean filter(Activity activity) {
-    var isExcluded = excludedActivityTypes.contains(activity.getActivityType());
+    var isExcluded = excludedActivityTypes.contains(activity.activityType());
     if (isExcluded) {
       LOG.debug("Filtering out activity: {}. It's among the excluded activity types: {}", activity,
           excludedActivityTypes);

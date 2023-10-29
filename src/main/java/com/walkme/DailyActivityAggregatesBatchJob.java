@@ -1,12 +1,12 @@
 package com.walkme;
 
 import com.walkme.adapters.frameworks.flink.ActivityTimeWatermarkStrategyFactory;
+import com.walkme.entities.Activity;
 import com.walkme.entities.ActivityAccumulator;
-import com.walkme.generated.Activity;
 import com.walkme.usecases.AggregateActivities;
 import com.walkme.usecases.FilterOutActivitiesInActiveTestEnvironment;
 import com.walkme.usecases.FilterOutExcludedActivityTypes;
-import com.walkme.usecases.MapOptionalFields;
+import com.walkme.adapters.mappers.MapActivityDtoToActivityEntity;
 import com.walkme.usecases.ReadInputActivities;
 import java.util.Set;
 import org.apache.flink.api.java.functions.KeySelector;
@@ -23,7 +23,7 @@ public final class DailyActivityAggregatesBatchJob {
       Path dataPath, Set<String> excludeActivitiesTypes, StreamExecutionEnvironment env) {
     return ReadInputActivities.readInputData(dataPath, env)
         .assignTimestampsAndWatermarks(ActivityTimeWatermarkStrategyFactory.get())
-        .map(new MapOptionalFields())
+        .map(new MapActivityDtoToActivityEntity())
         .filter(new FilterOutExcludedActivityTypes(excludeActivitiesTypes))
         .filter(new FilterOutActivitiesInActiveTestEnvironment())
         .keyBy(groupByUserIdEnvironmentActivityType())
@@ -35,7 +35,7 @@ public final class DailyActivityAggregatesBatchJob {
     return new KeySelector<>() {
       @Override
       public Tuple3<String, String, String> getKey(Activity it) {
-        return new Tuple3<>(it.getUserId(), it.getEnvironment(), it.getActivityType());
+        return new Tuple3<>(it.userId(), it.environment(), it.activityType());
       }
     };
   }

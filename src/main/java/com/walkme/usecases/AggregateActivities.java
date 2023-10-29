@@ -1,10 +1,9 @@
 package com.walkme.usecases;
 
-import static com.walkme.common.TimeConverter.toTimestampAtEndOfDay;
 import static com.walkme.common.TimeConverter.toUtcDate;
 
+import com.walkme.entities.Activity;
 import com.walkme.entities.ActivityAccumulator;
-import com.walkme.generated.Activity;
 import org.apache.flink.api.common.functions.AggregateFunction;
 
 /**
@@ -12,16 +11,6 @@ import org.apache.flink.api.common.functions.AggregateFunction;
  */
 public class AggregateActivities
     implements AggregateFunction<Activity, ActivityAccumulator, ActivityAccumulator> {
-
-  /**
-   * Calculate the runtime of an activity. If the activity doesn't have an end timestamp,
-   * we use the end of the date as a default.
-   */
-  private long calculateActivityRunTime(Activity activity) {
-    var endTimestamp = activity.getOptionalEndTimestamp()
-        .orElse(toTimestampAtEndOfDay(activity.getStartTimestamp()));
-    return endTimestamp - activity.getStartTimestamp();
-  }
 
   @Override
   public ActivityAccumulator createAccumulator() {
@@ -31,13 +20,13 @@ public class AggregateActivities
 
   @Override
   public ActivityAccumulator add(Activity activity, ActivityAccumulator acc) {
-    var timeMs = calculateActivityRunTime(activity);
+    var runTimeMs = activity.endTimestamp() - activity.startTimestamp();
     return new ActivityAccumulator(
-        toUtcDate(activity.getStartTimestamp()),
-        activity.getUserId(),
-        activity.getEnvironment(),
-        activity.getActivityType(),
-        acc.runTime() + timeMs
+        toUtcDate(activity.startTimestamp()),
+        activity.userId(),
+        activity.environment(),
+        activity.activityType(),
+        acc.runTime() + runTimeMs
     );
   }
 

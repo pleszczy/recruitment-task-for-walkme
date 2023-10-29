@@ -25,6 +25,7 @@ java {
 
 avro {
     createOptionalGetters = true
+    optionalGettersForNullableFieldsOnly = true
     outputCharacterEncoding = "UTF-8"
 }
 
