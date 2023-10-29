@@ -10,7 +10,7 @@ import java.time.Duration;
 import okhttp3.OkHttpClient;
 
 /**
- * TODO: Use guice
+ * TODO: Switch to guice
  */
 public final class AppModule /*extends AbstractModule*/ {
 
@@ -29,5 +29,4 @@ public final class AppModule /*extends AbstractModule*/ {
   public Retry exponentialRetry(Duration initialInterval, int multiplier, int maxRetries) {
     return ExponentialRetryFactory.exponentialRetry(initialInterval, multiplier, maxRetries);
   }
-
 }

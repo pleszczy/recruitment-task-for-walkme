@@ -1,10 +1,7 @@
 package com.walkme.usecases;
 
-import com.walkme.adapters.frameworks.flink.SizeBasedFileRollingPolicy;
 import com.walkme.entities.ActivityAccumulator;
 import com.walkme.generated.DailyActivityAggregate;
-import org.apache.flink.api.java.functions.KeySelector;
-import org.apache.flink.api.java.tuple.Tuple4;
 import org.apache.flink.connector.file.sink.FileSink;
 import org.apache.flink.core.fs.Path;
 import org.apache.flink.core.io.SimpleVersionedSerializer;
@@ -18,19 +15,10 @@ import org.apache.flink.streaming.api.functions.sink.filesystem.bucketassigners.
 public class WriteOutputData {
   public static DataStreamSink<DailyActivityAggregate> execute(
       SingleOutputStreamOperator<ActivityAccumulator> aggregatedDataStream, Path outputPath) {
-
-    var avroDataStream = aggregatedDataStream
+    return aggregatedDataStream
         .map(activityAcc -> new DailyActivityAggregate(activityAcc.date(), activityAcc.userId(),
             activityAcc.environment(), activityAcc.activityType(), activityAcc.runTime()))
-        .setParallelism(1)
-        .keyBy(new KeySelector<DailyActivityAggregate, Tuple4<String, String, String, String>>() {
-          @Override
-          public Tuple4<String, String, String, String> getKey(DailyActivityAggregate it) {
-            return new Tuple4<>(it.getDate(), it.getUserId(), it.getActivityType(), it.getEnvironment());
-          }
-        });
-
-    return avroDataStream
+        .keyBy(DailyActivityAggregate::getDate)
         .sinkTo(getFileSink(outputPath));
   }
 
@@ -45,7 +33,7 @@ public class WriteOutputData {
             var year = parts[0];
             var month = parts[1];
             var day = parts[2];
-            return String.format("year=%s/month=%s/day=%s", year, month, day);
+            return "year=%s/month=%s/day=%s".formatted(year, month, day);
           }
 
           @Override
@@ -53,7 +41,6 @@ public class WriteOutputData {
             return SimpleVersionedStringSerializer.INSTANCE;
           }
         })
-        .withRollingPolicy(new SizeBasedFileRollingPolicy<>(2L * 1024L * 1024L * 1024L))
         .withOutputFileConfig(OutputFileConfig.builder()
             .withPartSuffix(".snappy.parquet")
             .build())

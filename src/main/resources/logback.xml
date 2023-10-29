@@ -5,7 +5,7 @@
             <pattern>%d{HH:mm:ss} %-5p %C{0}: %m%n</pattern>
         </encoder>
     </appender>
-    <root level="DEBUG">
+    <root level="INFO">
         <appender-ref ref="STDOUT"/>
     </root>
     <logger name="org.apache" level="INFO"/>
