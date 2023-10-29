@@ -1,12 +1,12 @@
 package com.walkme;
 
 import com.walkme.adapters.frameworks.flink.ActivityTimeWatermarkStrategyFactory;
+import com.walkme.adapters.mappers.MapActivityDtoToActivityEntity;
 import com.walkme.entities.Activity;
 import com.walkme.entities.ActivityAccumulator;
 import com.walkme.usecases.AggregateActivities;
 import com.walkme.usecases.FilterOutActivitiesInActiveTestEnvironment;
 import com.walkme.usecases.FilterOutExcludedActivityTypes;
-import com.walkme.adapters.mappers.MapActivityDtoToActivityEntity;
 import com.walkme.usecases.ReadInputActivities;
 import java.util.Set;
 import org.apache.flink.api.java.functions.KeySelector;
@@ -22,10 +22,10 @@ public final class DailyActivityAggregatesBatchJob {
   public static SingleOutputStreamOperator<ActivityAccumulator> execute(
       Path dataPath, Set<String> excludeActivitiesTypes, StreamExecutionEnvironment env) {
     return ReadInputActivities.readInputData(dataPath, env)
-        .assignTimestampsAndWatermarks(ActivityTimeWatermarkStrategyFactory.get())
         .map(new MapActivityDtoToActivityEntity())
         .filter(new FilterOutExcludedActivityTypes(excludeActivitiesTypes))
         .filter(new FilterOutActivitiesInActiveTestEnvironment())
+        .assignTimestampsAndWatermarks(ActivityTimeWatermarkStrategyFactory.get())
         .keyBy(groupByUserIdEnvironmentActivityType())
         .window(TumblingEventTimeWindows.of(Time.days(1)))
         .aggregate(new AggregateActivities());

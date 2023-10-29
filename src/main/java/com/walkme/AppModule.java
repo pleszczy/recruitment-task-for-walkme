@@ -9,11 +9,7 @@ import io.github.resilience4j.retry.Retry;
 import java.time.Duration;
 import okhttp3.OkHttpClient;
 
-/**
- * TODO: Switch to guice
- */
-public final class AppModule /*extends AbstractModule*/ {
-
+public final class AppModule {
   public EnvironmentRepository environmentRepository() {
     return new EnvironmentRepository(httpClient(), objectMapper(), exponentialRetry(Duration.ofSeconds(5), 2, 100));
   }
