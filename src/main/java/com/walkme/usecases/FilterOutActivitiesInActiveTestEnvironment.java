@@ -6,7 +6,6 @@ import com.walkme.common.TimeConverter;
 import com.walkme.entities.Environment;
 import com.walkme.generated.Activity;
 import java.util.Objects;
-import java.util.Optional;
 import org.apache.flink.api.common.functions.RichFilterFunction;
 import org.apache.flink.configuration.Configuration;
 import org.slf4j.Logger;
@@ -26,7 +25,7 @@ public class FilterOutActivitiesInActiveTestEnvironment extends RichFilterFuncti
   public boolean filter(Activity activity) {
     return environmentRepository.fetchEnvironment(activity.getUserId())
         .map(env -> {
-          boolean isExcluded = activityOccursInActiveTestEnvironment(activity, env);
+          boolean isExcluded = doesActivityOccurInActiveTestEnvironment(activity, env);
           if (isExcluded) {
             logExcludedActivity(activity, env);
           }
@@ -37,7 +36,7 @@ public class FilterOutActivitiesInActiveTestEnvironment extends RichFilterFuncti
   /**
    * Determines if an activity occurs during the active test environment time.
    */
-  private boolean activityOccursInActiveTestEnvironment(Activity activity, Environment env) {
+  private boolean doesActivityOccurInActiveTestEnvironment(Activity activity, Environment env) {
     var isSameTestEnvironment = Objects.equals(activity.getEnvironment(), env.environment());
     return isSameTestEnvironment && isWithinTestEnvironmentActiveTime(activity, env);
   }
@@ -49,23 +48,15 @@ public class FilterOutActivitiesInActiveTestEnvironment extends RichFilterFuncti
     var activeFrom = TimeConverter.toTimestampAtStartOfDay(environment.activeFrom());
     var activeUntil = TimeConverter.toTimestampAtEndOfDay(environment.activeUntil());
     var activityStart = activity.getStartTimestamp();
-    var activityEnd = getActivityEndTimestamp(activity);
+    var activityEnd = activity.getEndTimestamp();
 
     return (activityStart >= activeFrom && activityStart <= activeUntil)
         || (activityEnd >= activeFrom && activityEnd <= activeUntil);
   }
 
-  /**
-   * Retrieves the end timestamp of the activity or defaults to the end of the date of the start timestamp.
-   */
-  private long getActivityEndTimestamp(Activity activity) {
-    return Optional.ofNullable(activity.getEndTimestamp())
-        .orElse(TimeConverter.toTimestampAtEndOfDay(activity.getStartTimestamp()));
-  }
-
   private void logExcludedActivity(Activity activity, Environment environment) {
     var startISO = TimeConverter.toUtcDate(activity.getStartTimestamp());
-    var endISO = TimeConverter.toUtcDate(getActivityEndTimestamp(activity));
+    var endISO = TimeConverter.toUtcDate(activity.getEndTimestamp());
     LOG.debug("Excluding activity: [userID: {}, env: {}, start: {}, end: {}] due to active test environment: {}",
         activity.getUserId(), activity.getEnvironment(), startISO, endISO, environment);
   }

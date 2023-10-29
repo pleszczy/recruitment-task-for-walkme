@@ -20,6 +20,8 @@ public class App {
   public static void executeJob(Path inputPath, Path outputPath, Set<String> excludeActivitiesTypes) throws Exception {
     try (var env = setupEnvironment()) {
       var dailyAggregatesStream = DailyActivityAggregatesBatchJob.execute(inputPath, excludeActivitiesTypes, env);
+      // Debugging parquet issue
+      dailyAggregatesStream.print();
       WriteOutputData.execute(dailyAggregatesStream, outputPath);
       env.execute("Walkme Take Home Assignment");
     }

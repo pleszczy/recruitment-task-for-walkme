@@ -5,7 +5,6 @@ import static com.walkme.common.TimeConverter.toUtcDate;
 
 import com.walkme.entities.ActivityAccumulator;
 import com.walkme.generated.Activity;
-import java.util.Optional;
 import org.apache.flink.api.common.functions.AggregateFunction;
 
 /**
@@ -19,7 +18,7 @@ public class AggregateActivities
    * we use the end of the date as a default.
    */
   private long calculateActivityRunTime(Activity activity) {
-    var endTimestamp = Optional.ofNullable(activity.getEndTimestamp())
+    var endTimestamp = activity.getOptionalEndTimestamp()
         .orElse(toTimestampAtEndOfDay(activity.getStartTimestamp()));
     return endTimestamp - activity.getStartTimestamp();
   }
