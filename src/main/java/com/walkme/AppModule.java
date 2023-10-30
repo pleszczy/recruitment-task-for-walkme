@@ -7,10 +7,11 @@ import com.walkme.adapters.frameworks.resilence4j.ExponentialRetryFactory;
 import com.walkme.adapters.repositories.EnvironmentRepository;
 import com.walkme.common.ParamParser;
 import io.github.resilience4j.retry.Retry;
+import java.io.Serializable;
 import java.time.Duration;
 import okhttp3.OkHttpClient;
 
-public final class AppModule {
+public final class AppModule implements Serializable {
   public EnvironmentRepository environmentRepository() {
     return new EnvironmentRepository(httpClient(), objectMapper(), exponentialRetry(Duration.ofSeconds(5), 2, 100));
   }
