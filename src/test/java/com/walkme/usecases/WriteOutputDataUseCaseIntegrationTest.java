@@ -55,19 +55,19 @@ class WriteOutputDataUseCaseIntegrationTest {
 
   @Test
   void should_correctly_write_output_files() throws Exception {
-    var env = StreamExecutionEnvironment.getExecutionEnvironment();
+    try (var env = StreamExecutionEnvironment.getExecutionEnvironment()) {
+      sut.execute(testData(env), new Path(tempDir.toUri()));
+      env.execute("should_correctly_write_output_files");
 
-    sut.execute(testData(env), new Path(tempDir.toUri()));
-    env.execute("should_correctly_write_output_files");
-
-    var dailyActivityAggregates = readOutputFileContent();
-    assertThat(dailyActivityAggregates).hasSize(3);
-    assertThat(dailyActivityAggregates).contains(
-        new DailyActivityAggregate("2023-10-12", "user1", "testEnv", "activityType1", 100L));
-    assertThat(dailyActivityAggregates).contains(
-        new DailyActivityAggregate("2023-10-12", "user2", "testEnv2", "activityType2", 200L));
-    assertThat(dailyActivityAggregates).contains(
-        new DailyActivityAggregate("2023-10-12", "user3", "testEnv3", "activityType3", 300L));
+      var dailyActivityAggregates = readOutputFileContent();
+      assertThat(dailyActivityAggregates).hasSize(3);
+      assertThat(dailyActivityAggregates).contains(
+          new DailyActivityAggregate("2023-10-12", "user1", "testEnv", "activityType1", 100L));
+      assertThat(dailyActivityAggregates).contains(
+          new DailyActivityAggregate("2023-10-12", "user2", "testEnv2", "activityType2", 200L));
+      assertThat(dailyActivityAggregates).contains(
+          new DailyActivityAggregate("2023-10-12", "user3", "testEnv3", "activityType3", 300L));
+    }
   }
 
   private List<DailyActivityAggregate> readOutputFileContent() throws IOException {

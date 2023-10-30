@@ -171,13 +171,14 @@ In the default configuration in the Flink distribution, this option is configure
 ### 8. Null Activity Type Handling
 - **Note**: Activities with `null` types are mapped to "UNKNOWN" to facilitate the filtering process.
 
-### 9. Multiple File Outputs with a single row after migration to Parquet format
+### 9. Outputs Files have only a single row with date. The rest is filled with nulls, after migration to Parquet format
 #### Issue Description
 After transitioning from CSV to Parquet file formats, an unexpected behavior occurred where multiple Parquet files are created for each day with only one record per file. This contrasts with the previous CSV implementation where a single file was created per day using `keyBy(date)` and the files contained multiple records.
 
 #### Attempted Resolutions
-Efforts to consolidate file output into fewer files, such as enforcing a `SizeBasedFileRollingPolicy` and setting `setParallelism(1)`, did not yield the expected results. The problem persists, suggesting that the issue might not stem from file rolling policies or parallelism configurations.
-
+- Efforts to consolidate file output into fewer files, such as enforcing a `SizeBasedFileRollingPolicy` and setting `setParallelism(1)`, did not yield the expected results. The problem persists, suggesting that the issue might not stem from file rolling policies or parallelism configurations.
+- converting records to pojos and downgrading kyro back to 2.x did not yield the expected results
+- Switching from SpecificRecord to GenericRecord did not yield the expected results
 #### Ongoing Investigations
 - **Java Version Suspicions**: There is an ongoing suspicion that the serialization anomalies could be related to Java 17, necessitating further investigation into the Java serialization mechanisms involved [FLINK-32380](https://issues.apache.org/jira/browse/FLINK-32380)
 - **Integration Testing**: An integration test for the `WriteOutputDataUseCase` use case was implemented. However, this test has not successfully replicated the problematic behavior.
