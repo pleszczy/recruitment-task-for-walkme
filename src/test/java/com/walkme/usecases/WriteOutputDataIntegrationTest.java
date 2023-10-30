@@ -1,14 +1,20 @@
 package com.walkme.usecases;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import com.walkme.entities.ActivityAccumulator;
+import com.walkme.generated.DailyActivityAggregate;
 import java.nio.file.Files;
+import java.util.ArrayList;
 import org.apache.flink.core.fs.Path;
 import org.apache.flink.runtime.testutils.MiniClusterResourceConfiguration;
 import org.apache.flink.streaming.api.datastream.DataStreamSource;
 import org.apache.flink.streaming.api.environment.StreamExecutionEnvironment;
 import org.apache.flink.test.junit5.MiniClusterExtension;
+import org.apache.hadoop.conf.Configuration;
+import org.apache.parquet.avro.AvroParquetReader;
+import org.apache.parquet.hadoop.util.HadoopInputFile;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -29,6 +35,13 @@ class WriteOutputDataIntegrationTest {
 
   private WriteOutputData sut;
 
+  private static DataStreamSource<ActivityAccumulator> testData(StreamExecutionEnvironment env) {
+    return env.fromElements(
+        new ActivityAccumulator("2023-10-12", "user1", "testEnv", "activityType1", 100L),
+        new ActivityAccumulator("2023-10-12", "user2", "testEnv2", "activityType2", 200L)
+    );
+  }
+
   @BeforeEach
   void beforeEach() {
     sut = new WriteOutputData();
@@ -45,20 +58,25 @@ class WriteOutputDataIntegrationTest {
       var files = stream
           .filter(Files::isRegularFile)
           .toList();
-      assertEquals(1, files.size(), "Expected exactly one output file.");
-    }
-  }
+      assertThat(files).hasSize(1);
 
-  private static DataStreamSource<ActivityAccumulator> testData(StreamExecutionEnvironment env) {
-    return env.fromElements(
-        new ActivityAccumulator("2023-10-12", "user1", "testEnv", "activityType1", 1000L),
-        new ActivityAccumulator("2023-10-12", "user1", "testEnv", "activityType3", 1000L),
-        new ActivityAccumulator("2023-10-12", "user1", "testEnv2", "activityType2", 1000L),
-        new ActivityAccumulator("2023-10-12", "user1", "testEnv2", "activityType4", 1000L),
-        new ActivityAccumulator("2023-10-12", "user2", "testEnv", "activityType1", 1000L),
-        new ActivityAccumulator("2023-10-12", "user2", "testEnv", "activityType3", 1000L),
-        new ActivityAccumulator("2023-10-12", "user2", "testEnv2", "activityType2", 1000L),
-        new ActivityAccumulator("2023-10-12", "user2", "testEnv3", "activityType4", 1000L)
-    );
+      var hadoopPath = new org.apache.hadoop.fs.Path(files.get(0).toUri());
+      var inputFile = HadoopInputFile.fromPath(hadoopPath, new Configuration());
+
+      try (var reader = AvroParquetReader
+          .<DailyActivityAggregate>builder(inputFile)
+          .build()) {
+
+        var records = new ArrayList<>();
+        DailyActivityAggregate activityAggregate;
+        while ((activityAggregate = reader.read()) != null) {
+          records.add(activityAggregate);
+        }
+
+        assertThat(records).hasSize(2);
+        assertThat(records).contains(new DailyActivityAggregate("2023-10-12", "user1", "testEnv", "activityType1", 100L));
+        assertThat(records).contains(new DailyActivityAggregate("2023-10-12", "user2", "testEnv2", "activityType2", 200L));
+      }
+    }
   }
 }
