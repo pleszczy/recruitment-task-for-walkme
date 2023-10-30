@@ -130,8 +130,24 @@ Overriding input/output data paths
 ### 3. Compatibility of Java 17 with Flink
 - **Issue**: Issues arise from Flink's reflection-based serialization of UDFs and data via Kryo when using JDK classes.
 - **Resolution**: Granted access to essential JDK classes using VM options, for example: `--add-opens java.base/java.lang=ALL-UNNAMED`.
+- **Notes** Experimental support for Java 17 was added in 1.18.0. [FLINK-15736](https://issues.apache.org/jira/browse/FLINK-15736)
+#### Untested Flink features
+These Flink features have not been tested with Java 17:
+- Hive connector
+- Hbase 1.x connector
 
-  ![img_2.png](img_2.png)
+#### JDK modularization
+Starting with Java 16, Java applications have to fully cooperate with the JDK modularization, also known as Project Jigsaw. This means that access to JDK classes/internal must be explicitly allowed by the application when it is started, on a per-module basis, in the form of `--add-opens/--add-exports` JVM arguments.
+
+Since Flink uses reflection for serializing user-defined functions and data (via Kryo), this means that if your UDFs or data types use JDK classes you may have to allow access to these JDK classes.
+
+These should be configured via the `env.java.opts.all` option.
+
+In the default configuration in the Flink distribution, this option is configured such that Flink itself works on Java 17. The list of configured arguments must not be shortened, but only extended.
+
+#### Known issues
+- Java records are not supported. See [FLINK-32380](https://issues.apache.org/jira/browse/FLINK-32380) for updates.
+- SIGSEGV in C2 Compiler thread: Early Java 17 builds are affected by a bug where the JVM can fail abruptly. Update your Java 17 installation to resolve the issue. See [JDK-8277529](https://bugs.openjdk.org/browse/JDK-8277529) for details.
 
 ### 4. Persistent Retry Issue with OkHttp3
 - **Issue**: OkHttp3 keeps retrying indefinitely when an API is down.
@@ -140,6 +156,7 @@ Overriding input/output data paths
 ### 5. Kryo Serializer Limitation with Java Records
 - **Issue**: Kryo serializer lacks support for Java records.
 - **Resolution**: While record support was introduced to Kryo in a [recent update](https://github.com/EsotericSoftware/kryo/pull/766), Flink uses an older version. As a remedy, the Kryo dependency was updated.
+- **Notes**: It's a known issue, See [FLINK-32380](https://issues.apache.org/jira/browse/FLINK-32380) for updates.
 
 `java.lang.IllegalArgumentException: Unable to create serializer "com.esotericsoftware.kryo.serializers.FieldSerializer" for class: com.walkme.usecases.AggregateDailyActivitiesUseCase$AggregateActivity`
 
@@ -162,7 +179,7 @@ After transitioning from CSV to Parquet file formats, an unexpected behavior occ
 Efforts to consolidate file output into fewer files, such as enforcing a `SizeBasedFileRollingPolicy` and setting `setParallelism(1)`, did not yield the expected results. The problem persists, suggesting that the issue might not stem from file rolling policies or parallelism configurations.
 
 #### Ongoing Investigations
-- **Java Version Suspicions**: There is an ongoing suspicion that the serialization anomalies could be related to Java 17, necessitating further investigation into the Java serialization mechanisms involved.
+- **Java Version Suspicions**: There is an ongoing suspicion that the serialization anomalies could be related to Java 17, necessitating further investigation into the Java serialization mechanisms involved [FLINK-32380](https://issues.apache.org/jira/browse/FLINK-32380)
 - **Integration Testing**: An integration test for the `WriteOutputDataUseCase` use case was implemented. However, this test has not successfully replicated the problematic behavior.
 - **`WriteOutputDataUseCase` is receiving data correctly**
 ![img_4.png](img_4.png)
