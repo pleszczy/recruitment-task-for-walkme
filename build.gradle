@@ -79,6 +79,7 @@ dependencies {
     )
 
     testImplementation(
+            // Common dependencies
             "org.assertj:assertj-core:${versions.assertj}",
             "org.awaitility:awaitility:${versions.awaitability}",
             "org.hamcrest:hamcrest-core:${versions.hamcrest}",
@@ -86,7 +87,11 @@ dependencies {
             "org.junit.jupiter:junit-jupiter-api:${versions.junit}",
             "org.junit.jupiter:junit-jupiter-params:${versions.junit}",
             "org.mockito:mockito-inline:${versions.mockito}",
-            "org.mockito:mockito-junit-jupiter:${versions.mockito}"
+            "org.mockito:mockito-junit-jupiter:${versions.mockito}",
+
+            // Flink dependencies
+            "org.apache.flink:flink-test-utils:${versions.flink}",
+            "org.apache.flink:flink-runtime-web:${versions.flink}"
     )
 
     testRuntimeOnly "org.junit.jupiter:junit-jupiter-engine:${versions.junit}"
@@ -97,12 +102,19 @@ configurations {
         resolutionStrategy {
             exclude group: 'log4j', module: 'log4j'
             exclude group: 'org.slf4j', module: 'slf4j-log4j12'
-            exclude group: 'junit', module: 'junit'
         }
     }
 }
 
 test {
+    systemProperties = [
+            'file.encoding': 'UTF-8',
+            'user.timezone': 'UTC'
+    ]
+    jvmArgs = [
+            '--add-opens', 'java.base/java.lang=ALL-UNNAMED',
+            '--add-opens', 'java.base/java.util=ALL-UNNAMED'
+    ]
     useJUnitPlatform()
 }
 
