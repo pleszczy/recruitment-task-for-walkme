@@ -9,7 +9,7 @@ import org.apache.flink.api.common.functions.AggregateFunction;
 /**
  * Aggregate daily activities to compute total runtime for each type of activity per user.
  */
-public class AggregateActivities
+public class AggregateActivitiesUseCase
     implements AggregateFunction<Activity, ActivityAccumulator, ActivityAccumulator> {
 
   @Override

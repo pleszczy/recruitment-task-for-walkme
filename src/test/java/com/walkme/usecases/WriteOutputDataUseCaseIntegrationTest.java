@@ -27,7 +27,7 @@ import org.junit.jupiter.api.extension.RegisterExtension;
 import org.junit.jupiter.api.io.TempDir;
 
 @ExtendWith(MiniClusterExtension.class)
-class WriteOutputDataIntegrationTest {
+class WriteOutputDataUseCaseIntegrationTest {
   @RegisterExtension
   public static final MiniClusterExtension MINI_CLUSTER_RESOURCE = new MiniClusterExtension(
       new MiniClusterResourceConfiguration.Builder()
@@ -38,7 +38,7 @@ class WriteOutputDataIntegrationTest {
   @TempDir
   private java.nio.file.Path tempDir;
 
-  private WriteOutputData sut;
+  private WriteOutputDataUseCase sut;
 
   private static DataStreamSource<ActivityAccumulator> testData(StreamExecutionEnvironment env) {
     return env.fromElements(
@@ -50,7 +50,7 @@ class WriteOutputDataIntegrationTest {
 
   @BeforeEach
   void beforeEach() {
-    sut = new WriteOutputData();
+    sut = new WriteOutputDataUseCase();
   }
 
   @Test

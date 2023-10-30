@@ -2,7 +2,9 @@ package com.walkme;
 
 import static org.apache.flink.streaming.api.environment.StreamExecutionEnvironment.createLocalEnvironmentWithWebUI;
 
-import com.walkme.usecases.WriteOutputData;
+import com.walkme.usecases.AggregateDailyActivitiesUseCase;
+import com.walkme.usecases.ReadInputActivitiesUseCase;
+import com.walkme.usecases.WriteOutputDataUseCase;
 import java.util.Set;
 import org.apache.flink.api.common.RuntimeExecutionMode;
 import org.apache.flink.api.common.restartstrategy.RestartStrategies;
@@ -24,13 +26,21 @@ public class App {
 
   public static void executeJob(Path inputPath, Path outputPath, Set<String> excludeActivitiesTypes) throws Exception {
     try (var env = setupEnvironment()) {
-      var batchJob = new DailyActivityAggregatesBatchJob(appModule);
-      var aggregatesStream = batchJob
-          .execute(inputPath, excludeActivitiesTypes, env);
-      // Debugging parquet issue
-      aggregatesStream.print();
-      var writeOutputDataUseCase = new WriteOutputData();
-      writeOutputDataUseCase.execute(aggregatesStream, outputPath);
+      var inputDataStream =
+          new ReadInputActivitiesUseCase().execute(inputPath, env);
+
+      // Debugging writing to parquet issues
+      inputDataStream.print();
+
+      var dailyAggregatedActivitiesStream = new AggregateDailyActivitiesUseCase(appModule)
+          .execute(inputDataStream, excludeActivitiesTypes);
+
+      // Debugging writing to parquet issues
+      dailyAggregatedActivitiesStream.print();
+
+      var writeOutputDataUseCase = new WriteOutputDataUseCase();
+      writeOutputDataUseCase.execute(dailyAggregatedActivitiesStream, outputPath);
+
       env.execute("Walkme Take Home Assignment");
     }
   }

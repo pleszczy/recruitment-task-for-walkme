@@ -11,12 +11,12 @@ import org.apache.flink.configuration.Configuration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class FilterOutActivitiesInActiveTestEnvironment extends RichFilterFunction<Activity> {
-  private static final Logger LOG = LoggerFactory.getLogger(FilterOutActivitiesInActiveTestEnvironment.class);
+public class FilterOutActivitiesInActiveTestEnvironmentUseCase extends RichFilterFunction<Activity> {
+  private static final Logger LOG = LoggerFactory.getLogger(FilterOutActivitiesInActiveTestEnvironmentUseCase.class);
   private final AppModule appModule;
   private transient EnvironmentRepository environmentRepository;
 
-  public FilterOutActivitiesInActiveTestEnvironment(AppModule appModule) {
+  public FilterOutActivitiesInActiveTestEnvironmentUseCase(AppModule appModule) {
     this.appModule = appModule;
   }
 

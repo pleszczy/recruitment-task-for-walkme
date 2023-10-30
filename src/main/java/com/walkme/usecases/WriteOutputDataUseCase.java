@@ -10,7 +10,7 @@ import org.apache.flink.streaming.api.datastream.DataStreamSink;
 import org.apache.flink.streaming.api.datastream.SingleOutputStreamOperator;
 import org.apache.flink.streaming.api.functions.sink.filesystem.OutputFileConfig;
 
-public class WriteOutputData {
+public class WriteOutputDataUseCase {
   public DataStreamSink<DailyActivityAggregate> execute(
       SingleOutputStreamOperator<ActivityAccumulator> aggregatedDataStream, Path outputPath) {
     return aggregatedDataStream

@@ -141,7 +141,7 @@ Overriding input/output data paths
 - **Issue**: Kryo serializer lacks support for Java records.
 - **Resolution**: While record support was introduced to Kryo in a [recent update](https://github.com/EsotericSoftware/kryo/pull/766), Flink uses an older version. As a remedy, the Kryo dependency was updated.
 
-`java.lang.IllegalArgumentException: Unable to create serializer "com.esotericsoftware.kryo.serializers.FieldSerializer" for class: com.walkme.DailyActivityAggregatesBatchJob$AggregateActivity`
+`java.lang.IllegalArgumentException: Unable to create serializer "com.esotericsoftware.kryo.serializers.FieldSerializer" for class: com.walkme.usecases.AggregateDailyActivitiesUseCase$AggregateActivity`
 
 ### 6. Lambda Function Limitations with Java Generics
 - **Issue**: The concise lambdas are less preferable due to insufficient type information they provide, especially when Java generics are in play.

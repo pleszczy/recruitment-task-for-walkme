@@ -11,10 +11,9 @@ import org.apache.flink.core.fs.Path;
 import org.apache.flink.formats.parquet.avro.AvroParquetReaders;
 import org.apache.flink.streaming.api.datastream.DataStreamSource;
 import org.apache.flink.streaming.api.environment.StreamExecutionEnvironment;
-import org.jetbrains.annotations.NotNull;
 
-public class ReadInputActivities {
-  public static DataStreamSource<Activity> readInputData(Path dataPath, StreamExecutionEnvironment env) {
+public class ReadInputActivitiesUseCase {
+  public DataStreamSource<Activity> execute(Path dataPath, StreamExecutionEnvironment env) {
     var streamFormat = AvroParquetReaders.forSpecificRecord(Activity.class);
     var source = FileSource.forBulkFileFormat(toBulkFormat(streamFormat), dataPath)
         .processStaticFileSet()
@@ -22,8 +21,7 @@ public class ReadInputActivities {
     return env.fromSource(source, WatermarkStrategy.forMonotonousTimestamps(), "activities data");
   }
 
-  @NotNull
-  private static BulkFormat<Activity, FileSourceSplit> toBulkFormat(
+  private BulkFormat<Activity, FileSourceSplit> toBulkFormat(
       StreamFormat<Activity> activityStreamFormat) {
     return new StreamFormatAdapter<>(activityStreamFormat);
   }

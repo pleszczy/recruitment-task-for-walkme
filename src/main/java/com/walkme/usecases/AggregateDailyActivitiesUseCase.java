@@ -1,36 +1,31 @@
-package com.walkme;
+package com.walkme.usecases;
 
+import com.walkme.AppModule;
 import com.walkme.adapters.mappers.MapActivityDtoToActivityEntity;
 import com.walkme.entities.Activity;
 import com.walkme.entities.ActivityAccumulator;
-import com.walkme.usecases.AggregateActivities;
-import com.walkme.usecases.FilterOutActivitiesInActiveTestEnvironment;
-import com.walkme.usecases.FilterOutExcludedActivityTypes;
-import com.walkme.usecases.ReadInputActivities;
 import java.util.Set;
 import org.apache.flink.api.common.eventtime.WatermarkStrategy;
 import org.apache.flink.api.java.functions.KeySelector;
 import org.apache.flink.api.java.tuple.Tuple3;
-import org.apache.flink.core.fs.Path;
+import org.apache.flink.streaming.api.datastream.DataStreamSource;
 import org.apache.flink.streaming.api.datastream.SingleOutputStreamOperator;
-import org.apache.flink.streaming.api.environment.StreamExecutionEnvironment;
 import org.apache.flink.streaming.api.windowing.assigners.TumblingEventTimeWindows;
 import org.apache.flink.streaming.api.windowing.time.Time;
 
-public final class DailyActivityAggregatesBatchJob {
-
+public final class AggregateDailyActivitiesUseCase {
   private final AppModule appModule;
 
-  public DailyActivityAggregatesBatchJob(AppModule appModule) {
+  public AggregateDailyActivitiesUseCase(AppModule appModule) {
     this.appModule = appModule;
   }
 
   public SingleOutputStreamOperator<ActivityAccumulator> execute(
-      Path dataPath, Set<String> excludeActivitiesTypes, StreamExecutionEnvironment env) {
-    return ReadInputActivities.readInputData(dataPath, env)
+      DataStreamSource<com.walkme.generated.Activity> inputStream, Set<String> excludeActivitiesTypes) {
+    return inputStream
         .map(new MapActivityDtoToActivityEntity())
-        .filter(new FilterOutExcludedActivityTypes(excludeActivitiesTypes))
-        .filter(new FilterOutActivitiesInActiveTestEnvironment(appModule))
+        .filter(new FilterOutExcludedActivityTypesUseCase(excludeActivitiesTypes))
+        .filter(new FilterOutActivitiesInActiveTestEnvironmentUseCase(appModule))
         .assignTimestampsAndWatermarks(
             WatermarkStrategy.<Activity>forMonotonousTimestamps().withTimestampAssigner(
                 ctx -> (activity, previousElementTimestamp) -> activity.startTimestamp()))
@@ -41,6 +36,6 @@ public final class DailyActivityAggregatesBatchJob {
           }
         })
         .window(TumblingEventTimeWindows.of(Time.days(1)))
-        .aggregate(new AggregateActivities());
+        .aggregate(new AggregateActivitiesUseCase());
   }
 }
