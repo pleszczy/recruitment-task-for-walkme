@@ -22,13 +22,13 @@ public final class AggregateDailyActivitiesUseCase {
   public SingleOutputStreamOperator<ActivityAccumulator> execute(
       DataStreamSource<com.walkme.generated.Activity> inputStream, Set<String> excludeActivitiesTypes) {
     return inputStream
-        .map(new MapActivityDtoToActivityEntity())
-        .filter(new FilterOutExcludedActivityTypesUseCase(excludeActivitiesTypes))
-        .filter(new FilterOutActivitiesInActiveTestEnvironmentUseCase(appModule))
+        .map(appModule.mapActivityDtoToActivityEntity())
+        .filter(appModule.filterOutExcludedActivityTypesUseCase(excludeActivitiesTypes))
+        .filter(appModule.filterOutActivitiesInActiveTestEnvironmentUseCase())
         .assignTimestampsAndWatermarks(WatermarkStrategy.<Activity>forMonotonousTimestamps().withTimestampAssigner(
             ctx -> (activity, previousElementTimestamp) -> activity.startTimestamp()))
         .keyBy(it -> new StringTuple3(it.userId(), it.environment(), it.activityType()))
         .window(TumblingEventTimeWindows.of(Time.days(1)))
-        .aggregate(new AggregateActivitiesUseCase());
+        .aggregate(appModule.aggregateActivitiesUseCase());
   }
 }
