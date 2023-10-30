@@ -19,12 +19,18 @@ import org.apache.flink.streaming.api.windowing.time.Time;
 
 public final class DailyActivityAggregatesBatchJob {
 
-  public static SingleOutputStreamOperator<ActivityAccumulator> execute(
+  private final AppModule appModule;
+
+  public DailyActivityAggregatesBatchJob(AppModule appModule) {
+    this.appModule = appModule;
+  }
+
+  public  SingleOutputStreamOperator<ActivityAccumulator> execute(
       Path dataPath, Set<String> excludeActivitiesTypes, StreamExecutionEnvironment env) {
     return ReadInputActivities.readInputData(dataPath, env)
         .map(new MapActivityDtoToActivityEntity())
         .filter(new FilterOutExcludedActivityTypes(excludeActivitiesTypes))
-        .filter(new FilterOutActivitiesInActiveTestEnvironment())
+        .filter(new FilterOutActivitiesInActiveTestEnvironment(appModule))
         .assignTimestampsAndWatermarks(ActivityTimeWatermarkStrategyFactory.get())
         .keyBy(groupByUserIdEnvironmentActivityType())
         .window(TumblingEventTimeWindows.of(Time.days(1)))

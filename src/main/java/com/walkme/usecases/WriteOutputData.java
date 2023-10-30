@@ -11,7 +11,7 @@ import org.apache.flink.streaming.api.datastream.SingleOutputStreamOperator;
 import org.apache.flink.streaming.api.functions.sink.filesystem.OutputFileConfig;
 
 public class WriteOutputData {
-  public static DataStreamSink<DailyActivityAggregate> execute(
+  public DataStreamSink<DailyActivityAggregate> execute(
       SingleOutputStreamOperator<ActivityAccumulator> aggregatedDataStream, Path outputPath) {
     return aggregatedDataStream
         .map(activityAcc -> DailyActivityAggregate.newBuilder()
@@ -25,7 +25,7 @@ public class WriteOutputData {
         .sinkTo(getFileSink(outputPath));
   }
 
-  private static FileSink<DailyActivityAggregate> getFileSink(Path outputPath) {
+  private FileSink<DailyActivityAggregate> getFileSink(Path outputPath) {
     return FileSink
         .forBulkFormat(outputPath, AvroParquetWriters.forSpecificRecord(DailyActivityAggregate.class))
         .withBucketAssigner(new ActivityTimeBucketAssigner())
@@ -33,7 +33,7 @@ public class WriteOutputData {
         .build();
   }
 
-  private static OutputFileConfig outputFileConfig() {
+  private OutputFileConfig outputFileConfig() {
     return OutputFileConfig.builder()
         .withPartSuffix(".snappy.parquet")
         .build();

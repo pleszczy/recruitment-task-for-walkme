@@ -6,9 +6,9 @@ import org.junit.jupiter.api.Test;
 
 class TimeConverterTest {
   @Test
-  void testToTimestampAtStartOfDay() {
+  void should_convert_date_to_timestamp_at_start_of_day() {
     var date = "2023-10-26";
-    var expected = 1698278400000L; // This is the UTC start of the date
+    var expected = 1698278400000L; // start of the date
 
     var actual = TimeConverter.toTimestampAtStartOfDay(date);
 
@@ -16,9 +16,9 @@ class TimeConverterTest {
   }
 
   @Test
-  void testToTimestampAtEndOfDay() {
+  void should_convert_date_to_timestamp_at_end_of_day() {
     var date = "2023-10-26";
-    var expected = 1698364799999L; // This is just one nanosecond before the UTC start of the next date
+    var expected = 1698364799999L; // one nanosecond before the start of the next date
 
     var actual = TimeConverter.toTimestampAtEndOfDay(date);
 
@@ -26,9 +26,9 @@ class TimeConverterTest {
   }
 
   @Test
-  void testToTimestampAtEndOfDayWithTimestamp() {
+  void should_convert_timestamp_to_timestamp_at_end_of_day_with_timestamp_as_input() {
     var timestamp = 1680120000000L; // Mar 29 2023 20:00:00
-    var expected = 1680134399999L; // Just one nanosecond before the UTC start of the next date
+    var expected = 1680134399999L; // one nanosecond before the start of the next date
 
     var actual = TimeConverter.toTimestampAtEndOfDay(timestamp);
 
@@ -36,8 +36,8 @@ class TimeConverterTest {
   }
 
   @Test
-  void testToISOFormat() {
-    var timestamp = 1680120000000L;
+  void should_convert_timestamp_to_date() {
+    var timestamp = 1680120000000L; // Mar 29 2023 20:00:00
     var expected = "2023-03-29";
 
     var actual = TimeConverter.toUtcDate(timestamp);

@@ -13,11 +13,15 @@ import org.slf4j.LoggerFactory;
 
 public class FilterOutActivitiesInActiveTestEnvironment extends RichFilterFunction<Activity> {
   private static final Logger LOG = LoggerFactory.getLogger(FilterOutActivitiesInActiveTestEnvironment.class);
+  private final AppModule appModule;
   private transient EnvironmentRepository environmentRepository;
+
+  public FilterOutActivitiesInActiveTestEnvironment(AppModule appModule) {
+    this.appModule = appModule;
+  }
 
   @Override
   public void open(Configuration parameters) {
-    var appModule = new AppModule();
     this.environmentRepository = appModule.environmentRepository();
   }
 
