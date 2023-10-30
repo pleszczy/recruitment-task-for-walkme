@@ -9,11 +9,10 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 class ParamParserTest {
-
   private ParamParser sut;
 
   @BeforeEach
-  public void setUp() {
+  public void beforeEach() {
     var args = new String[] {
         "--excludedActivityTypes", "walking,running",
         "--inputPath", "test_data/",
