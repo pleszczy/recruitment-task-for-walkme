@@ -8,11 +8,8 @@ import com.walkme.usecases.WriteOutputDataUseCase;
 import java.util.Set;
 import org.apache.flink.api.common.RuntimeExecutionMode;
 import org.apache.flink.api.common.restartstrategy.RestartStrategies;
-import org.apache.flink.api.common.time.Time;
 import org.apache.flink.configuration.Configuration;
 import org.apache.flink.core.fs.Path;
-import org.apache.flink.streaming.api.CheckpointingMode;
-import org.apache.flink.streaming.api.environment.CheckpointConfig;
 import org.apache.flink.streaming.api.environment.StreamExecutionEnvironment;
 import org.jetbrains.annotations.NotNull;
 
@@ -33,8 +30,7 @@ public class App {
           .execute(inputDataStream, excludeActivitiesTypes);
       // Debugging writing to parquet issues
       dailyAggregatedActivitiesStream.print();
-      var writeOutputDataUseCase = new WriteOutputDataUseCase();
-      writeOutputDataUseCase.execute(dailyAggregatedActivitiesStream, outputPath);
+      new WriteOutputDataUseCase().execute(dailyAggregatedActivitiesStream, outputPath);
       env.execute("Walkme Take Home Assignment");
     }
   }
@@ -45,16 +41,5 @@ public class App {
     env.setRuntimeMode(RuntimeExecutionMode.BATCH);
     env.setRestartStrategy(RestartStrategies.fallBackRestart());
     return env;
-  }
-
-  // debugging parquet issues
-  private static void enableCheckpointing(StreamExecutionEnvironment env) {
-    env.enableCheckpointing(10000);
-    env.getCheckpointConfig().setCheckpointingMode(CheckpointingMode.EXACTLY_ONCE);
-    env.getCheckpointConfig().setCheckpointTimeout(60000);
-    env.getCheckpointConfig().setMaxConcurrentCheckpoints(1);
-    env.getCheckpointConfig().setExternalizedCheckpointCleanup(
-        CheckpointConfig.ExternalizedCheckpointCleanup.RETAIN_ON_CANCELLATION);
-    env.setRestartStrategy(RestartStrategies.fixedDelayRestart(3, Time.seconds(10)));
   }
 }
