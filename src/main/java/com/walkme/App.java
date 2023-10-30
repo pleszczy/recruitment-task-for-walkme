@@ -3,7 +3,7 @@ package com.walkme;
 import static org.apache.flink.streaming.api.environment.StreamExecutionEnvironment.createLocalEnvironmentWithWebUI;
 
 import com.walkme.usecases.AggregateDailyActivitiesUseCase;
-import com.walkme.usecases.ReadInputActivitiesUseCase;
+import com.walkme.usecases.ReadInputDataUseCase;
 import com.walkme.usecases.WriteOutputDataUseCase;
 import java.util.Set;
 import org.apache.flink.api.common.RuntimeExecutionMode;
@@ -26,21 +26,15 @@ public class App {
 
   public static void executeJob(Path inputPath, Path outputPath, Set<String> excludeActivitiesTypes) throws Exception {
     try (var env = setupEnvironment()) {
-      var inputDataStream =
-          new ReadInputActivitiesUseCase().execute(inputPath, env);
-
+      var inputDataStream = new ReadInputDataUseCase().execute(inputPath, env);
       // Debugging writing to parquet issues
       inputDataStream.print();
-
       var dailyAggregatedActivitiesStream = new AggregateDailyActivitiesUseCase(appModule)
           .execute(inputDataStream, excludeActivitiesTypes);
-
       // Debugging writing to parquet issues
       dailyAggregatedActivitiesStream.print();
-
       var writeOutputDataUseCase = new WriteOutputDataUseCase();
       writeOutputDataUseCase.execute(dailyAggregatedActivitiesStream, outputPath);
-
       env.execute("Walkme Take Home Assignment");
     }
   }

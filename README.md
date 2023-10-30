@@ -163,7 +163,9 @@ Efforts to consolidate file output into fewer files, such as enforcing a `SizeBa
 
 #### Ongoing Investigations
 - **Java Version Suspicions**: There is an ongoing suspicion that the serialization anomalies could be related to Java 17, necessitating further investigation into the Java serialization mechanisms involved.
-- **Integration Testing**: An integration test for the `WriteOutputData` use case was implemented. However, this test has not successfully replicated the problematic behavior.
+- **Integration Testing**: An integration test for the `WriteOutputDataUseCase` use case was implemented. However, this test has not successfully replicated the problematic behavior.
+- **`WriteOutputDataUseCase` is receiving data correctly**
+![img_4.png](img_4.png)
 
 #### Next Steps
 - Add additional integration tests
